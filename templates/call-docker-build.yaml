@@ -81,7 +81,7 @@ jobs:
     ###   # and docker-build-push step will push to all of them
     ###   ghcr.io/${{ github.repository }}
     #  image-names: |
-    #    ghcr.io/${{ github.rep }}
+    #    ghcr.io/${{ github.repository }}
 
     ### Platforms to build for 
     ### common ones: linux/amd64,linux/arm64,linux/arm/v7
