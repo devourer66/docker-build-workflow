@@ -54,7 +54,8 @@ jobs:
     ### Docker context (path) to start build from 
     ### To set to a subdir, use format of "{{defaultContext}}:mysubdir"
     ### default: "{{defaultContext}}"
-    #  context: "{{defaultContext}}"
+    ### defaults to root of repository (.)
+    #  context: .
      
     ### Log into Docker Hub
     ### defult: false
