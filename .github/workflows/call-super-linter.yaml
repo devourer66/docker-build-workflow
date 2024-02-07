@@ -1,5 +1,7 @@
 ---
 name: Lint Code Base
+run-name: Linting ${{ github.ref_name }} for ${{ github.triggering_actor }}
+
 permissions: {}
 
 on:
