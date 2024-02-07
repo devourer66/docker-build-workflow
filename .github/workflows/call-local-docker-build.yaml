@@ -88,14 +88,15 @@ jobs:
     
     ### For adjusting the runner's configuration
     ### defaults to '["ubuntu-latest"]'
-      runner-labels: '["self-hosted", "Linux"]'
+    #  runner-labels: '["self-hosted", "Linux"]'
   
   report:
     needs: [call-docker-build]
     runs-on: ubuntu-latest
     steps:
-      # shellcheck disable=SC2086
       - run: |
+          # shellcheck disable=SC2086
           echo "# Images" >> $GITHUB_STEP_SUMMARY
+          # shellcheck disable=SC2086
           echo "- ${{ needs.call-docker-build.outputs.image-tag }}" >> $GITHUB_STEP_SUMMARY
 
