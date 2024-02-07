@@ -92,8 +92,9 @@ jobs:
   
   report:
     needs: [call-docker-build]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
+      # shellcheck disable=SC2086
       - run: |
           echo "# Images" >> $GITHUB_STEP_SUMMARY
           echo "- ${{ needs.call-docker-build.outputs.image-tag }}" >> $GITHUB_STEP_SUMMARY
