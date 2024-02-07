@@ -35,7 +35,7 @@ jobs:
       packages: write
       pull-requests: write
     
-    secrets:
+#    secrets:
 #      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
 #      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
