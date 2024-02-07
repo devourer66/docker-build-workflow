@@ -3,6 +3,7 @@
 # This is just for testing the repo itself.
 # This calls the reusable workflow from its local file path.
 name: Docker Build
+run-name: Building ${{ github.ref_name }} for ${{ github.triggering_actor }}
 permissions: {}
 
 on:
@@ -88,3 +89,10 @@ jobs:
     ### For adjusting the runner's configuration
     ### defaults to '["ubuntu-latest"]'
       runner-labels: '["self-hosted", "Linux"]'
+  
+  report:
+    needs: [call-docker-build]
+    steps:
+      - run: |
+        echo "Image: ${{ needs.call-docker-build.outputs.image-tag }}" >> GITHUB_STEP_SUMMARY
+
