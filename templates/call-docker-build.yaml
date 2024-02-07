@@ -1,6 +1,7 @@
 ---
 # template source: https://github.com/bretfisher/docker-build-workflow/blob/main/templates/call-docker-build.yaml
 name: Docker Build
+permissions: {}
 
 on:
   push:
@@ -26,13 +27,11 @@ jobs:
 
     name: Call Docker Build
 
-    # FIXME: fork this repo and update this path to YOUR reusable workflow location
-    uses: bretfisher/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
+    uses: devourer66/docker-build-workflow/.github/workflows/reusable-docker-build.yaml@main
 
     # set permissions here to be equal or greater than what's required in the Reusable Workflow
     # Permisions set here for the GITHUB_TOKEN are then passed to the Reusable Workflow
     # Calling permissions must be equal to or greater than these reusable permissions for it to work
-    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#supported-keywords-for-jobs-that-call-a-reusable-workflow
     permissions:
       contents: read
       packages: write # needed to push docker image to ghcr.io
@@ -46,30 +45,81 @@ jobs:
       # dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
     with:
-      
-      # NOTE: there are lots of input options for this reusable workflow
-      # read the comments in the inputs area of the reusable workflow for more info
-      # https://github.com/BretFisher/docker-build-workflow/blob/main/.github/workflows/reusable-docker-build.yaml
+  
 
-      # Here are just a few of the common defaults
+    ### Create a PR comment with image tags and labels 
+    ### default: true 
+    #  comment-enable: true 
+    
+    ### Docker context (path) to start build from 
+    ### To set to a subdir, use format of "{{defaultContext}}:mysubdir"
+    ### default: "{{defaultContext}}"
+    #  context: "{{defaultContext}}"
+     
+    ### Log into Docker Hub
+    ### defult: false
+    #  dockerhub-enable: false
 
-      # dockerhub-enable: false
-      # ghcr-enable: true
+    ### Dockerfile to build, relative to context path 
+    ### default: ""
+    #  file: ""
+    
+    ### Three rules to (optionally) set for tag-rules, latest, prefix, and suffix
+    ### default: |
+    ###   # will tag latest on a git tag push, or if you add a type=semver or type=match tag-rules
+    ###   # NOTE: if you are seeing `latest` retagged when you don't expect it, set this latest=false
+    ###   latest=auto
+    #  flavor-rules:
 
-      # image-names: |
-      #   ghcr.io/${{ github.repository }}
+    ### Log into GHCR
+    ### default: true 
+    #  ghcr-enable: true
 
-      # tag-rules: |
-      #   type=raw,value=stable-{{date 'YYYYMMDD'}}-{{sha}},enable={{is_default_branch}},priority=300
-      #   type=ref,event=tag,priority=200
-      #   type=raw,value=latest,enable={{is_default_branch}},priority=100
-      #   type=raw,value=gha-${{ github.run_id }},enable=${{github.event_name == 'pull_request'}},priority=200
-      #   type=ref,event=pr,priority=100
+    ### A list of the account/repo names for docker build to push to 
+    ### default: |
+    ###   # this is cool because you can add multiple names to different registries
+    ###   # and docker-build-push step will push to all of them
+    ###   ghcr.io/${{ github.repository }}
+    #  image-names: |
+    #    ghcr.io/${{ github.rep}}
 
-      # context: "{{defaultContext}}"
-      
-      # target:
-      
-      # platforms: linux/amd64
-      
-      # comment-enable: true
+    ### Platforms to build for 
+    ### common ones: linux/amd64,linux/arm64,linux/arm/v7
+    ### default: linux/amd64
+    #  platforms: linux/amd64
+
+    ### Push image to registry(s)
+    ### default: true 
+    #  push: true
+    
+    ### Use docker-metadata action to create tags from a key-value pair list in CSV format
+    ### https://github.com/marketplace/actions/docker-metadata-action#tags-input
+    ### # this ruleset will create one or more tags for each image in image-names
+    ### # some fire in pr-only, some in push/merge-only
+    ### # I still recommend reusable `latest` tag for human-friendly testing (not servers)
+    ### # I like a full tag for prod images that reads something like `stable-<date>-<commit>`
+    ### # Tags starting with `gha-<run_id>` are unique to each PR commit, and used to test fresh images      
+    ### # rules with is_default_branch only create the tag if it's a push/merge to default branch
+    ### # priority attribute is used to sort tags in the final list. The higher the value, 
+    ### #   the higher the priority. The first tag in the list (higher priority) will be used as 
+    ### #   the image version for generated OCI label and version output.
+    ### default: |
+    ###   type=raw,value=stable-{{date 'YYYYMMDD'}}-{{sha}},enable={{is_default_branch}},priority=300
+    ###   type=ref,event=tag,priority=200
+    ###   type=raw,value=latest,enable={{is_default_branch}},priority=100
+    ###   type=raw,value=gha-${{ github.run_id }},enable=${{github.event_name == 'pull_request'}},priority=200
+    ###   type=ref,event=pr,priority=100
+    #  tag-rules: |
+    #    type=raw,value=stable-{{date 'YYYYMMDD'}}-{{sha}},enable={{is_default_branch}},priority=300
+    #    type=ref,event=tag,priority=200
+    #    type=raw,value=latest,enable={{is_default_branch}},priority=100
+    #    type=raw,value=gha-${{ github.run_id }},enable=${{github.event_name == 'pull_request'}},priority=200
+    #    type=ref,event=pr,priority=100
+
+    ### Build stage to target
+    ### default: ""
+    #  target:
+    
+    ### For adjusting the runner's configuration
+    ### defaults to '["ubuntu-latest"]'
+    #  runner-labels: '["self-hosted", "Linux"]'

@@ -92,6 +92,12 @@ on:
         description: Build stage to target
         required: false
         type: string
+
+      runner-labels:
+        description: 'runs-on override (format: ''["self-hosted", "Linux"]'')'
+        required: false
+        type: string
+        default: '["ubuntu-latest"]'
    
     secrets:
       dockerhub-username:
@@ -121,7 +127,7 @@ jobs:
 
     name: Build+Push
 
-    runs-on: ubuntu-latest
+    runs-on: "${{ fromJSON(inputs.runner-labels) }}"
 
     outputs:
       # only outputs the unique gha- image tag that's unique to each GHA run
