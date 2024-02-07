@@ -94,5 +94,5 @@ jobs:
     needs: [call-docker-build]
     runs-on: self-hosted
     steps:
-      - run: echo "Image':' ${{ needs.call-docker-build.outputs.image-tag }}" >> GITHUB_STEP_SUMMARY
+      - run: echo "Image':' ${{ needs.call-docker-build.outputs.image-tag }}" >> $GITHUB_STEP_SUMMARY
 
