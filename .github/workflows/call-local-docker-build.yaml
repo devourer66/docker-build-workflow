@@ -36,15 +36,55 @@ jobs:
       pull-requests: write
     
     secrets:
-
-      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+#      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+#      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
     with:
-      
+    ### Create a PR comment with image tags and labels 
+      comment-enable: true 
+    
+    ### Log into Docker Hub
+    ### defult: false
       dockerhub-enable: false
+    
+    ### Log into GHCR
+    ### default: true 
       ghcr-enable: true
 
+    ### A list of the account/repo names for docker build to push to 
       image-names: |
-        ghcr.io/${{ github.repository }}
+        ghcr.io/${{ github.rep}}
+
+    ### Platforms to build for 
+    ### common ones: linux/amd64,linux/arm64,linux/arm/v7
+    ### default: linux/amd64
+    #  platforms: linux/amd64
+
+    ### Push image to registry(s)
+      push: true
+    
+    ### Use docker-metadata action to create tags from a key-value pair list in CSV format
+    ### https://github.com/marketplace/actions/docker-metadata-action#tags-input
+    ### # this ruleset will create one or more tags for each image in image-names
+    ### # some fire in pr-only, some in push/merge-only
+    ### # I still recommend reusable `latest` tag for human-friendly testing (not servers)
+    ### # I like a full tag for prod images that reads something like `stable-<date>-<commit>`
+    ### # Tags starting with `gha-<run_id>` are unique to each PR commit, and used to test fresh images      
+    ### # rules with is_default_branch only create the tag if it's a push/merge to default branch
+    ### # priority attribute is used to sort tags in the final list. The higher the value, 
+    ### #   the higher the priority. The first tag in the list (higher priority) will be used as 
+    ### #   the image version for generated OCI label and version output.
+    #  tag-rules: |
+    #    type=raw,value=stable-{{date 'YYYYMMDD'}}-{{sha}},enable={{is_default_branch}},priority=300
+    #    type=ref,event=tag,priority=200
+    #    type=raw,value=latest,enable={{is_default_branch}},priority=100
+    #    type=raw,value=gha-${{ github.run_id }},enable=${{github.event_name == 'pull_request'}},priority=200
+    #    type=ref,event=pr,priority=100
+
+    ### Build stage to target
+    ### default: ""
+    #  target:
+    
+    ### For adjusting the runner's configuration
+    ### defaults to '["ubuntu-latest"]'
+      runner-labels: '["self-hosted", "Linux"]'
