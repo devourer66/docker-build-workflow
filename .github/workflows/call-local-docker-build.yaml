@@ -53,7 +53,7 @@ jobs:
 
     ### A list of the account/repo names for docker build to push to 
       image-names: |
-        ghcr.io/${{ github.rep}}
+        ghcr.io/${{ github.rep }}
 
     ### Platforms to build for 
     ### common ones: linux/amd64,linux/arm64,linux/arm/v7
